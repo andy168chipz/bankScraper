@@ -11,6 +11,10 @@ def datasetboa(name):
 	return [(re.compile('|'.join(map(re.escape, row['Address'].split()))).sub('', row['Payee']), row["Type"]) for row in reader]
 
 
+def datasetCitibank(fileName):
+	reader = csv.DictReader(open(fileName))
+	return [(row['Comment']) for row in reader]
+
 def datasetchase(name):
 	reader = csv.DictReader(open(name))
 	return [(row['Description'], row['Type']) for row in reader]
@@ -37,6 +41,14 @@ def boa(filename):
 		print row
 
 
+def citibank(filename):
+	"""
+
+	:param filename:
+	:return: an array of all statements with addition of column type
+	"""
+#
+
 def chase(filename):
 	"""
 
@@ -56,6 +68,10 @@ def chase(filename):
 def ae():
 	pass
 
+def citiAnkeri():
+
+	pass
+
 #set up dictionary for actions
 choice = {
 	"boa": boa,
@@ -64,5 +80,6 @@ choice = {
 }
 
 if __name__ == '__main__':
-	chase('stmt_chase.csv')
+	# chase('stmt_chase.csv')
 	# boa('stmt_boa.csv')
+	print datasetCitibank('trainingCitibank.csv')
