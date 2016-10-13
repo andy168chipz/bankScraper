@@ -17,7 +17,7 @@ def datasetCitibank(fileName):
 
 def datasetchase(name):
 	reader = csv.DictReader(open(name))
-	return [(row['Description'], row['Type']) for row in reader]
+	return [(row['Description'], row['Category']) for row in reader]
 
 
 def boa(filename):
@@ -57,11 +57,12 @@ def chase(filename):
 	:return: return an array of all statements with the addition of type
 	"""
 	trainingSet = datasetchase('stmt_chase.csv')
+	testSet = datasetchase('stmt_chase.csv')
 	cl = NaiveBayesClassifier(trainingSet)
-	# print "Accuracy using test.csv %f" %cl.accuracy(testSet)
+	print "Accuracy using test.csv %f" %cl.accuracy(testSet)
 	stmt_reader = csv.DictReader(open(filename))
 	for row in stmt_reader:
-		row['Type'] = cl.classify(row['Description'])
+		row['Category'] = cl.classify(row['Description'])
 		print row
 
 
@@ -80,6 +81,6 @@ choice = {
 }
 
 if __name__ == '__main__':
-	# chase('stmt_chase.csv')
-	# boa('stmt_boa.csv')
-	print datasetCitibank('trainingCitibank.csv')
+	chase('stmt_chase.csv')
+	# boa('statements/June2016.csv')
+	# print datasetCitibank('trainingCitibank.csv')
