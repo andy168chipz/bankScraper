@@ -2,23 +2,7 @@ __author__ = 'Andy'
 import csv
 import datetime
 import time
-'''
-		<Category amount_is_percentage="false" budget="40000" color="255" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="food" sort_by="DATE" sort_reverse="no">
-			<Spent amount="27225" desc="" recurring="no" tentative="no" time="1462086000" where="Food BOA"/>
-		</Category>
-		<Category amount_is_percentage="false" budget="35000" color="65535" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="gas + clipper" sort_by="DATE" sort_reverse="no">
-			<Spent amount="28024" desc="" recurring="no" tentative="no" time="1462086000" where="Gas/Clipper BOA"/>
-		</Category>
-		<Category amount_is_percentage="false" budget="25000" color="16711680" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="Shopping" sort_by="DATE" sort_reverse="no"/>
-		<Category amount_is_percentage="false" budget="25000" color="16711680" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="Entertainment" sort_by="DATE" sort_reverse="no">
-			<Spent amount="24751" desc="" recurring="no" tentative="no" time="1462086000" where="Entertainment BOA"/>
-		</Category>
-		<Category amount_is_percentage="false" budget="60000" color="16711680" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="Travel" sort_by="DATE" sort_reverse="no"/>
-		<Category amount_is_percentage="false" budget="40000" color="16711680" desc="" fixed="no" hide_balance_graph="yes" hide_pie_graph="yes" name="Misc" sort_by="DATE" sort_reverse="no">
-			<Spent amount="3801" desc="" recurring="no" tentative="no" time="1462086000" where="Misc BOA"/>
-			<Spent amount="3801" desc="" recurring="no" tentative="no" time="1462086000" where="Misc BOA"/>
-		</Category>
-'''
+
 rows_sum = {}
 category_xml = {}
 category_details = {'Food':( 40000, 255),
@@ -28,11 +12,17 @@ category_details = {'Food':( 40000, 255),
 					'Travel':( 60000, 16776960),
 					'Misc':( 40000, 16711935),
 					'Insurance':( 50000, 16711680)}
+banks = ['ae', 'boa', 'chase', 'citi']
 
-def boa(statement):
-	reader = csv.DictReader(open(statement))
+
+def scrape(statement):
+	try:
+		reader = csv.DictReader(open(statement))
+	except IOError, e:
+		print e
+		return
 	for row in reader:
-		xml_string = xml(format_amount(row['Amount']), convert_time(row['Posted Date']), row['Payee'], row['Address'])
+		xml_string = xml(row['Amount'], row['Posted Date'], row['Payee'], row['Address'])
 		#calculate sum
 		if row['Category']:
 			try:
@@ -48,7 +38,9 @@ def xml(amount, date, payee, address):
 
 
 def format_amount(num):
+	print type(num), num
 	return int(-float(num)*100)
+
 
 
 def convert_time(date):
@@ -65,5 +57,14 @@ def print_xml():
 			print str
 		print '</Category>'
 
-boa('May2016boa.csv')
-print_xml()
+
+def print_statements(month):
+	#get from each
+	for x in banks:
+		print x, month
+		scrape('statements/{}/{}2016.csv'.format(x, month))
+	print_xml()
+
+# print_statements('May')
+
+scrape('statements/boa/May2016.csv')
